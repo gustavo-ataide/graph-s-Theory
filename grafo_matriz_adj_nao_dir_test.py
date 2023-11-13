@@ -25,13 +25,14 @@ class TestGrafo(unittest.TestCase):
         self.g_p.adiciona_aresta('a9', 'T', 'Z')
 
         # Clone do Grafo da Paraíba para ver se o método equals está funcionando
-        self.g_p2 = MeuGrafo([Vertice('J'),
-                             Vertice('C'),
-                             Vertice('E'),
-                             Vertice('P'),
-                             Vertice('M'),
-                             Vertice('T'),
-                             Vertice('Z')])
+        self.g_p2 = MeuGrafo()
+        self.g_p2.adiciona_vertice('J')
+        self.g_p2.adiciona_vertice('C')
+        self.g_p2.adiciona_vertice('E')
+        self.g_p2.adiciona_vertice('P')
+        self.g_p2.adiciona_vertice('M')
+        self.g_p2.adiciona_vertice('T')
+        self.g_p2.adiciona_vertice('Z')
         self.g_p2.adiciona_aresta('a1', 'J', 'C')
         self.g_p2.adiciona_aresta('a2', 'C', 'E')
         self.g_p2.adiciona_aresta('a3', 'C', 'E')
@@ -173,12 +174,62 @@ class TestGrafo(unittest.TestCase):
         self.g_d2.adiciona_vertice("C")
         self.g_d2.adiciona_vertice("D")
 
+        self.g_w = MeuGrafo()
+        self.g_w.adiciona_vertice('A')
+        self.g_w.adiciona_vertice('B')
+        self.g_w.adiciona_vertice('C')
+        self.g_w.adiciona_vertice('D')
+        self.g_w.adiciona_vertice('E')
+
+        self.g_w.adiciona_aresta('a1', 'A', 'B')
+        self.g_w.adiciona_aresta('a2', 'B', 'D')
+        self.g_w.adiciona_aresta('a3', 'E', 'D')
+
+        self.g_w_m = self.constroi_matriz(self.g_w)
+        for i in range(len(self.g_w_m)):
+            for j in range(len(self.g_w_m)):
+                if i == 2 or j == 2:
+                    continue
+                self.g_w_m[i][j] = 1
+
+        self.g_p_m = self.constroi_matriz(self.g_p)
+        for i in range(len(self.g_p_m)):
+            for j in range(len(self.g_p_m)):
+                self.g_p_m[i][j] = 1
+
+        self.g_w2 = MeuGrafo()
+        self.g_w2.adiciona_vertice('A')
+        self.g_w2.adiciona_vertice('B')
+        self.g_w2.adiciona_vertice('C')
+        self.g_w2.adiciona_vertice('D')
+        self.g_w2.adiciona_vertice('E')
+
+        self.g_w2.adiciona_aresta('a1', 'A', 'B')
+        self.g_w2.adiciona_aresta('a2', 'B', 'C')
+        self.g_w2.adiciona_aresta('a3', 'C', 'D')
+        self.g_w2_m = self.constroi_matriz(self.g_w2)
+
+        for i in range(len(self.g_w2_m)):
+            for j in range(len(self.g_w2_m)):
+                if i == 4 or j == 4:
+                    continue
+                self.g_w2_m[i][j] = 1
+
+    def constroi_matriz(self, g: MeuGrafo):
+        ordem = len(g._vertices)
+        m = list()
+        for i in range(ordem):
+            m.append(list())
+            for j in range(ordem):
+                m[i].append(0)
+        return m
+
     def test_adiciona_aresta(self):
         self.assertTrue(self.g_p.adiciona_aresta('a10', 'J', 'C'))
-        a = Aresta("zxc", self.g_p.get_vertice("C"), self.g_p.get_vertice("Z"))
-        self.assertTrue(self.g_p.adiciona_aresta(a))
+        # a = Aresta("zxc", self.g_p.get_vertice("C"), self.g_p.get_vertice("Z"))
+        self.assertTrue(self.g_p.adiciona_aresta("zxc", "C","Z"))
         with self.assertRaises(ArestaInvalidaError):
-            self.assertTrue(self.g_p.adiciona_aresta(a))
+            self.assertTrue(self.g_p.adiciona_aresta("zxc", "C","Z"))
         with self.assertRaises(VerticeInvalidoError):
             self.assertTrue(self.g_p.adiciona_aresta('b1', '', 'C'))
         with self.assertRaises(VerticeInvalidoError):
@@ -302,3 +353,8 @@ class TestGrafo(unittest.TestCase):
         self.assertFalse((self.g_l3.eh_completo()))
         self.assertFalse((self.g_l4.eh_completo()))
         self.assertFalse((self.g_l5.eh_completo()))
+
+    def test_warshall(self):
+        self.assertEqual(self.g_p.warshall(), self.g_p_m)
+        self.assertTrue(self.g_w.warshall(), self.g_w_m)
+        self.assertTrue(self.g_w2.warshall(), self.g_w2_m)

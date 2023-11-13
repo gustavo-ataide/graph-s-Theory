@@ -53,10 +53,10 @@ class TestGrafo(unittest.TestCase):
         self.g_p3.adiciona_vertice("M")
         self.g_p3.adiciona_vertice("T")
         self.g_p3.adiciona_vertice("Z")
-        self.g_p3.adiciona_aresta('a', 'J', 'C')
-        self.g_p3.adiciona_aresta('a2', 'C', 'E')
-        self.g_p3.adiciona_aresta('a3', 'C', 'E')
-        self.g_p3.adiciona_aresta('a4', 'P', 'C')
+        self.g_p3.adiciona_aresta('a', 'J', 'C',2)
+        self.g_p3.adiciona_aresta('a2', 'C', 'E',4)
+        self.g_p3.adiciona_aresta('a3', 'C', 'E',5)
+        self.g_p3.adiciona_aresta('a4', 'P', 'C',3)
         self.g_p3.adiciona_aresta('a5', 'P', 'C')
         self.g_p3.adiciona_aresta('a6', 'T', 'C')
         self.g_p3.adiciona_aresta('a7', 'M', 'C')
@@ -354,4 +354,4 @@ class TestGrafo(unittest.TestCase):
         self.assertEqual(self.g_e.warshall(), self.g_e_m)
 
     def test_dijkstra(self):
-        pass
+        self.g_p3.dijkstra('J', 'P')
