@@ -210,7 +210,7 @@ class TestGrafo(unittest.TestCase):
             self.g_e_m[3][i] = 1
             self.g_e_m[4][i] = 1
 
-        # Grafos desconexos
+        
         self.g_dijkstra = MeuGrafo()
         self.g_dijkstra.adiciona_vertice("A")
         self.g_dijkstra.adiciona_vertice("B")
@@ -220,6 +220,20 @@ class TestGrafo(unittest.TestCase):
         self.g_dijkstra.adiciona_aresta('2', 'A', 'C', 1)
         self.g_dijkstra.adiciona_aresta('3', 'B', 'D', 1)
         self.g_dijkstra.adiciona_aresta('2', 'C', 'D', 2)
+
+
+
+        #grafo com ciclo negativo
+        self.g_cilconegativo = MeuGrafo()
+        self.g_cilconegativo.adiciona_vertice("A")
+        self.g_cilconegativo.adiciona_vertice("B")
+        self.g_cilconegativo.adiciona_vertice("C")
+        self.g_cilconegativo.adiciona_vertice("D")
+        self.g_cilconegativo.adiciona_aresta('1', 'A', 'B', -10)
+        self.g_cilconegativo.adiciona_aresta('2', 'A', 'C', 1)
+        self.g_cilconegativo.adiciona_aresta('3', 'B', 'D', 1)
+        self.g_cilconegativo.adiciona_aresta('2', 'C', 'D', 2)
+
 
     def constroi_matriz(self, g: MeuGrafo):
         ordem = len(g._vertices)
@@ -354,4 +368,14 @@ class TestGrafo(unittest.TestCase):
         self.assertEqual(self.g_e.warshall(), self.g_e_m)
 
     def test_dijkstra(self):
-        self.g_p3.dijkstra('J', 'P')
+        self.assertFalse(self.g_e.dijkstra('A', 'E'))
+        self.assertFalse(self.g_p3.dijkstra("A","E"))
+        self.assertEqual(self.g_dijkstra.dijkstra("A","D"), ['A', 'B', 'D'])
+
+
+    def test_bellman_Ford(self):
+        self.assertFalse(self.g_cilconegativo.bellman_ford("A","D"))
+        self.assertEqual(self.g_dijkstra.bellman_ford("A","D"), ['A','B','D'])
+        self.assertEqual(self.g_p.bellman_ford("J","Z"), ['J', 'C', 'T', 'Z'])
+        self.assertEqual(self.g_e.bellman_ford("A","E"), ['A', 'E'])
+

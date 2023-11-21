@@ -141,91 +141,111 @@ class MeuGrafo(GrafoMatrizAdjacenciaDirecionado):
     #peso tem que ser positivo
 
 
-    # def dijkstra(self, inicio, fim):
-    #     if self.ha_laco():
-    #         return False
-    #
-    #     # if self.ha_paralelas():
-    #     #     return False
-    #
-    #     for vertice in self.vertices:
-    #         vertice.Beta = float('inf')
-    #         vertice.Total_Visitado = False
-    #         vertice.Predecessor = 0
-    #         vertice.W = self.get_vertice(inicio)
-    #
-    #     self.get_vertice(inicio).Beta = 0
-    #     self.get_vertice(inicio).Total_Visitado = True
-    #
-    #     for vertice in self.vertices:
-    #         if vertice.Total_Visitado == False:
-    #             print(vertice.Beta)
-    #
-    #             for aresta in self.arestas_sobre_vertice(vertice.rotulo):
-    #                 aresta = self.get_aresta(aresta)
-    #                 if vertice.Beta > vertice.W.Beta + aresta.peso:
-    #                     vertice.Beta = vertice.W.Beta + aresta.peso
-    #                     vertice.Predecessor = vertice.W
-    #
-    #             if vertice.Total_Visitado==False and vertice.Beta < float('inf') and
-    def dijkstra(self, inicio, fim):
-        self.W = self.get_vertice(inicio)
-        if self.ha_laco():
-            return False
 
+
+    def dijkstra(self, inicio, fim):
+        if self.ha_laco() or self.ha_paralelas():
+            return False
+        
         for vertice in self.vertices:
             vertice.Beta = float('inf')
             vertice.Total_Visitado = False
             vertice.Predecessor = 0
+            vertice.W = self.get_vertice(inicio)
 
         self.get_vertice(inicio).Beta = 0
         self.get_vertice(inicio).Total_Visitado = True
+        menorbeta = float('inf')
+        def acha_r(self,menorbeta):
+
+            r = None
+            for v in self.vertices:
+                if v.Total_Visitado == False and v.Beta < float('inf') and v.Beta < menorbeta:
+                    menorbeta = v.Beta
+                    v.Total_Visitado = True
+                    self.W = v
+                    r = self
+                    return r, menorbeta
+
+            return r, menorbeta
+
+        for vertice in self.vertices:
+            if vertice.Total_Visitado == False:
 
 
-        while True:
-            min_beta = float('inf')
-            min_vertice = None
+                for aresta in self.arestas_sobre_vertice(vertice.rotulo):
+                    aresta = self.get_aresta(aresta)
+                    if vertice.Beta > vertice.W.Beta + aresta.peso:
+                        vertice.Beta = vertice.W.Beta + aresta.peso
+                        vertice.Predecessor = vertice.W
+
+                r,menorbeta = acha_r(self,menorbeta)
+                if r is None:
+                    self.get_vertice(fim).Predecessor = self.W
+                    break
+                while self.W != self.get_vertice(fim):
+                    r,menorbeta = acha_r(self,menorbeta)
+                    if r is None:
+                        break
+                    self = r
+
+
+        def predec(self,inicio,lista,vertice):
+            lista.append(vertice.rotulo)
+            if vertice == inicio:
+                return lista
+            return predec(self,inicio,lista,vertice.Predecessor)
+
+        lista_vertices = []
+        lista_vertices = predec(self,self.get_vertice(inicio),lista_vertices,self.get_vertice(fim))
+
+        return lista_vertices[::-1]
 
 
 
-                    #if self.W == fim:
-            print(self.W)
-
-
-
-
-
-            for aresta in self.arestas_sobre_vertice(min_vertice.rotulo):
+    def bellman_ford(self,inicio,fim):
+        for vertice in self.vertices:
+            vertice.Pi = None
+            vertice.Pai = float('inf')
+        self.get_vertice(inicio).Pai = 0
+        
+        for i in range(len(self.vertices)-1):
+            for aresta in self.arestas_sobre_vertice(self.vertices[i].rotulo):
                 aresta = self.get_aresta(aresta)
-                if min_vertice.Beta > self.W.Beta + aresta.peso:
-                    min_vertice.Beta = self.W.Beta + aresta.peso
-                    min_vertice.Predecessor = self.W
+                
+                if aresta.v1 == self.vertices[i]:
+                    if aresta.peso + self.get_vertice(aresta.v1.rotulo).Pai < self.get_vertice(aresta.v2.rotulo).Pai:
+                        self.get_vertice(aresta.v2.rotulo).Pai = aresta.peso + self.get_vertice(aresta.v1.rotulo).Pai
+                        self.get_vertice(aresta.v2.rotulo).Pi = self.get_vertice(aresta.v1.rotulo)
 
-                    min_vertice.Total_Visitado = True
-                    self.W = min_vertice
+                if aresta.v2 == self.vertices[i]:
+                    if aresta.peso + self.get_vertice(aresta.v2.rotulo).Pai < self.get_vertice(aresta.v1.rotulo).Pai:
+                        self.get_vertice(aresta.v1.rotulo).Pai = aresta.peso + self.get_vertice(aresta.v2.rotulo).Pai
+                        self.get_vertice(aresta.v1.rotulo).Pi = self.get_vertice(aresta.v2.rotulo)
 
+        
+        #se depois disso continuar relaxando, retorno falso
+        for i in range(len(self.vertices)-1):
+            for aresta in self.arestas_sobre_vertice(self.vertices[i].rotulo):
+                aresta = self.get_aresta(aresta)
+                if aresta.v1 == self.vertices[i]:
+                    if aresta.peso + self.get_vertice(aresta.v1.rotulo).Pai < self.get_vertice(aresta.v2.rotulo).Pai:
+                        return False
 
+                if aresta.v2 == self.vertices[i]:
+                    if aresta.peso + self.get_vertice(aresta.v2.rotulo).Pai < self.get_vertice(aresta.v1.rotulo).Pai:
+                        return False
 
-            for vertice in self.vertices:
-                if vertice.Total_Visitado == False and vertice.Beta < min_beta:
-                    min_beta = vertice.Beta
-                    min_vertice = vertice
+        #agora basta achar o caminho
+        def predec(self,inicio,lista,vertice):
+            lista.append(vertice.rotulo)
+            if vertice == inicio:
+                return lista
+            return predec(self,inicio,lista,vertice.Pi)
 
-            if min_vertice is None:
-                break
-
-            self.get_vertice(min_vertice).Total_Visitado = True
-            min_vertice.Total_Visitado = True
-
-
-
-
-
-    # def dijkstra_aux(self, inicio,fim):
-
-
-
-
+        lista_vertices = []
+        lista_vertices = predec(self,self.get_vertice(inicio),lista_vertices,self.get_vertice(fim))
+        return lista_vertices[::-1]
 
 
 
@@ -236,6 +256,7 @@ g_dijkstra.adiciona_vertice("C")
 g_dijkstra.adiciona_vertice("D")
 g_dijkstra.adiciona_aresta('1', 'A', 'B', 1)
 g_dijkstra.adiciona_aresta('2', 'A', 'C', 1)
-g_dijkstra.adiciona_aresta('3', 'B', 'D', 1)
-g_dijkstra.adiciona_aresta('2', 'C', 'D', 2)
-g_dijkstra.dijkstra("A","D")
+g_dijkstra.adiciona_aresta('3', 'B', 'D', 7)
+g_dijkstra.adiciona_aresta('2', 'C', 'D', 1)
+
+print(g_dijkstra.dijkstra("A","D"))
